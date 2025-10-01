@@ -1,12 +1,13 @@
-from jose import JWTError,jwt # type: ignore
+from jose import JWTError,jwt, ExpiredSignatureError # type: ignore
 from datetime import datetime,timedelta
-import schemas,models
+from backend import schemas,models
 from fastapi import  Depends, HTTPException,status
 from fastapi.security import OAuth2PasswordBearer
-from config import settings  # type: ignore
+from backend.config import settings  # type: ignore
 from sqlalchemy.orm import Session
-from config import settings
-from database import get_db
+from backend.config import settings
+from backend.database import get_db
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
@@ -43,6 +44,12 @@ def verify_access_token(token:str,credentials_exception):
       raise credentials_exception
   
     token_data = schemas.TokenData(id = id)
+  except ExpiredSignatureError:
+    raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
   except JWTError:
     raise credentials_exception
   

@@ -1,4 +1,4 @@
-from database import Base
+from backend.database import Base
 from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
@@ -43,6 +43,7 @@ class Cart(Base):
     product_id = Column(Integer, ForeignKey("ecomproducts.id", ondelete="CASCADE"))
     quantity = Column(Integer, nullable=False, default=1)
     total_price=Column(Integer,nullable=False)
+    name=Column(String)
 
     user = relationship("EcomUser", backref="cart_items")
     product = relationship("Products")

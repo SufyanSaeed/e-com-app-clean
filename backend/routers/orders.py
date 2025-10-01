@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-import models, oauth2
-from database import get_db
+from backend import models, oauth2
+from backend.database import get_db
+
 
 router = APIRouter()
 
@@ -22,6 +23,7 @@ def checkout(
         price+=cart_item.total_price 
         order_items.append({
             "product_id": cart_item.product_id,
+            "name":cart_item.name,
             "quantity": cart_item.quantity,
             "price": cart_item.total_price
         })
@@ -37,3 +39,9 @@ def checkout(
     db.commit()
     db.refresh(new_order)
     return new_order
+
+
+@router.get('/order')
+def get_orders(db:Session=Depends(get_db),current_user:str = Depends(oauth2.get_current_user)):
+  orders = db.query(models.Order).filter(models.Order.user_id == current_user.username).all()
+  return orders

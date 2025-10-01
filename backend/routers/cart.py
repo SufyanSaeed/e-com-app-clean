@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-import models, schemas, oauth2
-from database import get_db
+from backend import models, schemas, oauth2
+from backend.database import get_db
+
 
 router = APIRouter()
 
@@ -41,6 +42,7 @@ def addToCart(
         new_cart_item = models.Cart(
             user_id=current_user.username,
             product_id=product.id,
+            name=product.name,
             quantity=cart_item.quantity,
             total_price=(product.price)*cart_item.quantity
         )

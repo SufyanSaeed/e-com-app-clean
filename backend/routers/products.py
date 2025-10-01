@@ -1,17 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 from sqlalchemy.orm import Session
-import models, schemas, oauth2
-from database import get_db
-from permissions import admin_required  
+from backend import models, schemas, oauth2
+from backend.database import get_db
+from backend.permissions import admin_required  
 
 router = APIRouter()
 
-@router.get("/ecomProducts", response_model=List[schemas.Product])
-def get_all_products(
-    db: Session = Depends(get_db),
-    current_user: models.EcomUser = Depends(oauth2.get_current_user)
-):
+@router.get("/ecomProducts")
+def get_all_products(db: Session = Depends(get_db)):
     products = db.query(models.Products).all()
     return products
 
@@ -30,8 +27,7 @@ def addProducts(
     return new_product
 
 @router.get("/ecomProducts/{id}",response_model=schemas.Product)
-def getProducts(id: int, db: Session = Depends(get_db),current_user: int = Depends(oauth2.get_current_user)
-                ):
+def getProducts(id: int, db: Session = Depends(get_db)):
 
     prod_query = db.query(models.Products).filter(models.Products.id == id)
     prod = prod_query.first()    
